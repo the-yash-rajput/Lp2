@@ -1,0 +1,91 @@
+Student 
+
+
+<apex:page Controller="sale" >
+<apex:form >
+
+
+<apex:pageBlock title="Edit Contact">
+
+<apex:pageBlockSection columns="1">
+<apex:inputField value="{!c.FirstName}"/>
+<apex:inputField value="{!c.LastName}"/>  
+<apex:inputField value="{!c.Email}"/>
+<apex:inputField value="{!c.Birthdate}"/>
+</apex:pageBlockSection>
+<apex:pageBlockButtons >
+<apex:commandButton action="{!save}" value="Save"/>
+</apex:pageBlockButtons>
+<apex:pageBlockButtons >
+<apex:commandButton action="{!del}" value="Delete"/>
+</apex:pageBlockButtons>
+<apex:pageBlockButtons >
+<apex:commandButton action="{!update1}" value="Update"/>
+</apex:pageBlockButtons>
+    
+<apex:pageBlockTable value="{!samepage}" var="c">
+<apex:column headerValue="First Name">
+<apex:outputField value="{!c.Firstname}"/>
+</apex:column>
+
+
+<apex:column headerValue="Last Name">
+<apex:outputField value="{!c.Lastname}"/>
+</apex:column>
+<apex:column headerValue="Email">
+<apex:outputField value="{!c.Email}"/>
+</apex:column>
+</apex:pageBlockTable>
+</apex:pageBlock>
+
+
+</apex:form>
+</apex:page>
+
+
+
+
+-------------------------------------------------------------------------------------
+
+
+public with sharing class sale {
+
+
+public Contact c { get; set; }
+public Contact d { get; set; }
+
+
+public List<Contact> samepage { get; set; }
+
+
+public sale(){
+	c=new Contact();
+	d=new Contact();
+}
+
+
+public PageReference save() {
+insert c;
+samepage= [select id,FirstName,LastName,Email,Birthdate from Contact];
+
+
+return null;
+}
+    public PageReference del(){
+    delete[SELECT FirstName FROM Contact where FirstName=:c.FirstName];
+    samepage= [select id,FirstName,LastName,Email,Birthdate from Contact ];
+    return null;
+}
+    
+    public PageReference update1() {
+        List<Contact> conts=[select id, Email from Contact where FirstName=:c.FirstName limit 1];
+        if (!conts.isEmpty())
+        {
+            Contact cont=conts[0];
+            cont.Email=c.Email;
+            update cont;
+        }
+        samepage= [select id,FirstName,LastName,Email,Birthdate from Contact ];
+        return null;
+    }
+}
